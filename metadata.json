@@ -1,0 +1,6 @@
+{
+  "name": "VaultPulse - Auto Financial Dashboard",
+  "description": "Automated financial dashboard tracking expenses and income with real-time analytics bento, bank stream sync, and intelligent category breakdown.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
