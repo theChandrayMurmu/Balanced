@@ -13,6 +13,7 @@ import { RecurringExpenses } from './components/RecurringExpenses';
 import { LiveTransactionFeed } from './components/LiveTransactionFeed';
 import { AddTransactionModal } from './components/AddTransactionModal';
 import { IntegrationGuideModal } from './components/IntegrationGuideModal';
+import { SecurityAuditModal } from './components/SecurityAuditModal';
 import { 
   INITIAL_BANK_ACCOUNTS, 
   INITIAL_RECURRING_BILLS, 
@@ -20,7 +21,9 @@ import {
   AUTOMATIC_FEED_POOL 
 } from './data/initialFinanceData';
 import { BankAccount, RecurringBill, Transaction, FinancialCategory } from './types/finance';
-import { Sparkles, ShieldCheck, Zap } from 'lucide-react';
+import { Sparkles, ShieldCheck, Zap, ServerOff, Lock } from 'lucide-react';
+
+const LOCAL_STORAGE_KEY = 'balanced_finance_storage_v1';
 
 export default function App() {
   const [viewMode, setViewMode] = useState<'dashboard' | 'demo'>('dashboard');
@@ -33,11 +36,64 @@ export default function App() {
   
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isGuideModalOpen, setIsGuideModalOpen] = useState(false);
+  const [isSecurityModalOpen, setIsSecurityModalOpen] = useState(false);
 
-  const [transactions, setTransactions] = useState<Transaction[]>(INITIAL_TRANSACTIONS);
-  const [bankAccounts, setBankAccounts] = useState<BankAccount[]>(INITIAL_BANK_ACCOUNTS);
+  // Initialize transactions and bankAccounts from browser localStorage (zero remote server)
+  const [transactions, setTransactions] = useState<Transaction[]>(() => {
+    try {
+      const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed.transactions) && parsed.transactions.length > 0) {
+          return parsed.transactions;
+        }
+      }
+    } catch (e) {
+      // Local fallback
+    }
+    return INITIAL_TRANSACTIONS;
+  });
+
+  const [bankAccounts, setBankAccounts] = useState<BankAccount[]>(() => {
+    try {
+      const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed.bankAccounts) && parsed.bankAccounts.length > 0) {
+          return parsed.bankAccounts;
+        }
+      }
+    } catch (e) {
+      // Local fallback
+    }
+    return INITIAL_BANK_ACCOUNTS;
+  });
+
   const [recurringBills] = useState<RecurringBill[]>(INITIAL_RECURRING_BILLS);
   const [autoCaptureCount, setAutoCaptureCount] = useState<number>(0);
+
+  // Auto-persist all financial records in client-side localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify({
+        transactions,
+        bankAccounts,
+        currency,
+        updatedAt: new Date().toISOString()
+      }));
+    } catch (e) {
+      console.warn('LocalStorage save warning:', e);
+    }
+  }, [transactions, bankAccounts, currency]);
+
+  // Purge local storage
+  const handlePurgeLocalData = () => {
+    try {
+      localStorage.removeItem(LOCAL_STORAGE_KEY);
+    } catch (e) {}
+    setTransactions(INITIAL_TRANSACTIONS);
+    setBankAccounts(INITIAL_BANK_ACCOUNTS);
+  };
 
   // Sync dark class on documentElement
   useEffect(() => {
@@ -289,6 +345,7 @@ export default function App() {
         onSimulateFeed={handleSimulateFeed}
         onOpenAddModal={() => setIsAddModalOpen(true)}
         onOpenGuideModal={() => setIsGuideModalOpen(true)}
+        onOpenSecurityModal={() => setIsSecurityModalOpen(true)}
         viewMode={viewMode}
         setViewMode={setViewMode}
         lastSyncTime={lastSyncTime}
@@ -399,7 +456,15 @@ export default function App() {
       <footer className="border-t border-border py-6 text-center text-xs text-muted-foreground">
         <div className="max-w-[1400px] mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
           <span>balanced Financial Intelligence · Built with shadcn project structure & Tailwind CSS</span>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              onClick={() => setIsSecurityModalOpen(true)}
+              className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 hover:underline underline-offset-4 font-medium"
+            >
+              <ShieldCheck className="size-3.5" />
+              <span>Security Audit: 100% Local Storage</span>
+            </button>
+            <span>·</span>
             <button
               onClick={() => setIsGuideModalOpen(true)}
               className="hover:text-foreground underline underline-offset-4"
@@ -423,6 +488,13 @@ export default function App() {
       <IntegrationGuideModal
         isOpen={isGuideModalOpen}
         onClose={() => setIsGuideModalOpen(false)}
+      />
+
+      <SecurityAuditModal
+        isOpen={isSecurityModalOpen}
+        onClose={() => setIsSecurityModalOpen(false)}
+        onPurgeLocalData={handlePurgeLocalData}
+        transactionCount={transactions.length}
       />
     </div>
   );

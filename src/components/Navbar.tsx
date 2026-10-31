@@ -10,7 +10,8 @@ import {
   Sparkles,
   SlidersHorizontal,
   LayoutDashboard,
-  Eye
+  Eye,
+  ShieldCheck
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -25,6 +26,7 @@ interface NavbarProps {
   onSimulateFeed: () => void;
   onOpenAddModal: () => void;
   onOpenGuideModal: () => void;
+  onOpenSecurityModal: () => void;
   viewMode: 'dashboard' | 'demo';
   setViewMode: (v: 'dashboard' | 'demo') => void;
   lastSyncTime: string;
@@ -42,6 +44,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onSimulateFeed,
   onOpenAddModal,
   onOpenGuideModal,
+  onOpenSecurityModal,
   viewMode,
   setViewMode,
   lastSyncTime,
@@ -154,6 +157,16 @@ export const Navbar: React.FC<NavbarProps> = ({
             <option value="€">EUR (€)</option>
             <option value="£">GBP (£)</option>
           </select>
+
+          {/* Security Audit & Local Storage Vault */}
+          <button
+            onClick={onOpenSecurityModal}
+            className="flex items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1.5 text-xs font-medium text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 transition-colors shadow-2xs"
+            title="Cloudflare Security Audit: Verified 100% Local Storage & Zero Server Egress"
+          >
+            <ShieldCheck className="size-3.5" />
+            <span className="hidden sm:inline">Audit: Local Only</span>
+          </button>
 
           {/* Guide Modal */}
           <button

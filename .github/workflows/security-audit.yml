@@ -1,0 +1,50 @@
+name: Cloudflare Security Audit & Vulnerability Check
+
+on:
+  schedule:
+    # Runs at midnight daily (00:00 UTC)
+    - cron: '0 0 * * *'
+  workflow_dispatch: # Allows manual trigger from GitHub Actions UI
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  security-audit:
+    name: Daily Midnight Security & Privacy Audit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js runtime
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run TypeScript & static analysis checks
+        run: npm run lint
+
+      - name: Execute Cloudflare Security Audit Skill & Local Storage Verification
+        run: npm run audit:daily
+
+      - name: Upload Security Audit Report & Findings Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-audit-report
+          path: |
+            security-audit/REPORT.md
+            security-audit/findings.json
+            security-audit/coverage-ledger.json
+            security-audit/architecture.md
+          retention-days: 30

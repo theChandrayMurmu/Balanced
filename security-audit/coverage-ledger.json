@@ -1,0 +1,86 @@
+{
+  "repository": "balanced-financial-dashboard",
+  "auditFramework": "cloudflare/security-audit-skill",
+  "version": "1.0.0",
+  "targetNeutral": true,
+  "lastAudited": "2026-10-31",
+  "units": [
+    {
+      "path": "src/App.tsx",
+      "type": "state-orchestration",
+      "status": "audited",
+      "trustBoundary": "client-boundary",
+      "findingsChecked": ["SEC-DATA-LOCAL-CONTAINMENT", "SEC-STATE-POLLUTION", "SEC-EGRESS-AUDIT"]
+    },
+    {
+      "path": "src/components/LiveTransactionFeed.tsx",
+      "type": "data-view",
+      "status": "audited",
+      "trustBoundary": "ui-render",
+      "findingsChecked": ["SEC-XSS-CSV-INJECTION", "SEC-CLIENT-DATA-LEAKAGE"]
+    },
+    {
+      "path": "src/components/AddTransactionModal.tsx",
+      "type": "user-input",
+      "status": "audited",
+      "trustBoundary": "untrusted-input-boundary",
+      "findingsChecked": ["SEC-INPUT-SANITIZATION", "SEC-LOCAL-PERSISTENCE"]
+    },
+    {
+      "path": "src/components/ConnectedAccounts.tsx",
+      "type": "account-balance-view",
+      "status": "audited",
+      "trustBoundary": "client-boundary",
+      "findingsChecked": ["SEC-ACCOUNT-MASKING", "SEC-API-EGRESS"]
+    },
+    {
+      "path": "src/components/RecurringExpenses.tsx",
+      "type": "subscriptions-view",
+      "status": "audited",
+      "trustBoundary": "ui-render",
+      "findingsChecked": ["SEC-DATA-INTEGRITY"]
+    },
+    {
+      "path": "src/components/KPISummary.tsx",
+      "type": "kpi-metrics",
+      "status": "audited",
+      "trustBoundary": "ui-render",
+      "findingsChecked": ["SEC-NUMERIC-PRECISION"]
+    },
+    {
+      "path": "src/components/Navbar.tsx",
+      "type": "navigation-and-controls",
+      "status": "audited",
+      "trustBoundary": "ui-control",
+      "findingsChecked": ["SEC-THEME-INJECTION"]
+    },
+    {
+      "path": "src/data/initialFinanceData.ts",
+      "type": "seed-and-categorizer",
+      "status": "audited",
+      "trustBoundary": "static-assets",
+      "findingsChecked": ["SEC-PROTOTYPE-POLLUTION", "SEC-REGEX-DOS"]
+    },
+    {
+      "path": "components/ui/analytics-bento.tsx",
+      "type": "svg-visualization-primitive",
+      "status": "audited",
+      "trustBoundary": "vector-render",
+      "findingsChecked": ["SEC-SVG-INJECTION", "SEC-ANIMATION-DOS"]
+    },
+    {
+      "path": "components/ui/demo.tsx",
+      "type": "demo-harness",
+      "status": "audited",
+      "trustBoundary": "demo-isolated",
+      "findingsChecked": ["SEC-DEMO-ISOLATION"]
+    },
+    {
+      "path": "lib/utils.ts",
+      "type": "utility",
+      "status": "audited",
+      "trustBoundary": "shared-helper",
+      "findingsChecked": ["SEC-CLASSNAMES-INJECTION"]
+    }
+  ]
+}

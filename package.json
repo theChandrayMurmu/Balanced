@@ -8,7 +8,9 @@
     "build": "vite build",
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "audit": "node security-audit/validate-findings.cjs",
+    "audit:daily": "node security-audit/run-daily-audit.cjs"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",
